@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undo Project</title>
+    <style>
+        body {
+            background-color: white;
+            color: black;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh; /* Full height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            border: 2px solid black;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9; /* Light gray background for contrast */
+            width: 400px; /* Fixed width for better alignment */
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 100%; /* Full width for input */
+            border: 1px solid black;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: black;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s; /* Smooth transition for hover */
+        }
+
+        button:hover {
+            background-color: darkgray;
+        }
+
+        .action-list {
+            margin-top: 20px;
+            list-style-type: none;
+            padding: 0;
+            max-height: 200px; /* Limit height for scrolling */
+            overflow-y: auto; /* Scroll if too many actions */
+            border: 1px solid black; /* Border for the action list */
+            border-radius: 5px;
+        }
+
+        .action-list li {
+            padding: 10px;
+            border-bottom: 1px solid black;
+            transition: background-color 0.3s; /* Smooth transition for hover */
+        }
+
+        .action-list li:hover {
+            background-color: lightgray; /* Highlight on hover */
+        }
+
+        .action-list li:last-child {
+            border-bottom: none; /* Remove border from the last item */
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Action Stack</h1>
+        <form action="{% url 'perform_action' %}" method="post">
+            {% csrf_token %}
+            <input type="text" name="action_text" placeholder="Enter your action..." required>
+            <button type="submit">Perform Action</button>
+        </form>
+        <ul class="action-list">
+            {% for action in actions %}
+                <li>{{ action }}</li>
+            {% endfor %}
+        </ul>
+        <form action="{% url 'undo_action' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Undo Last Action</button>
+        </form>
+    </div>
+    <script>
+        {% if messages %}
+            {% for message in messages %}
+                Swal.fire({
+                    icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% elif message.tags == "warning" %}warning{% endif %}',
+                    title: '{{ message }}',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    position: 'top-right',
+                    toast: true,
+                    background: '#000',       // Black background
+                    color: '#fff',            // White text
+                    iconColor: '#fff',        // White icon color
+                });
+            {% endfor %}
+        {% endif %}
+    </script>
+</body>
+</html>
